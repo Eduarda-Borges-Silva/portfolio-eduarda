@@ -1,0 +1,2 @@
+import { BackToTop } from "../ui/BackToTop"; import { SocialLinks } from "../ui/SocialLinks";
+export function Footer(){return <footer className="border-t border-slate-200 py-8 dark:border-white/10"><div className="container flex flex-col items-center justify-between gap-5 md:flex-row"><div><p className="font-semibold">Eduarda Borges · {new Date().getFullYear()}</p><p className="text-sm text-slate-500">Desenvolvido com React, TypeScript e Tailwind CSS</p></div><div className="flex items-center gap-3"><SocialLinks/><BackToTop/></div></div></footer>}
