@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
+import { useAccessibility } from "../../contexts/AccessibilityContext";
 
 export function AmbientEffects() {
+  const { shouldReduceMotion } = useAccessibility();
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 24, restDelta: 0.001 });
   const [position, setPosition] = useState({ x: -300, y: -300 });
@@ -17,13 +19,15 @@ export function AmbientEffects() {
 
   return (
     <>
-      <motion.div className="scroll-progress" style={{ scaleX }} />
-      <motion.div
-        className="cursor-aura"
-        animate={{ x: position.x - 220, y: position.y - 220 }}
-        transition={{ type: "spring", stiffness: 55, damping: 20, mass: 0.7 }}
-        aria-hidden="true"
-      />
+      <motion.div className="scroll-progress" style={{ scaleX: shouldReduceMotion ? scrollYProgress : scaleX }} />
+      {!shouldReduceMotion && (
+        <motion.div
+          className="cursor-aura"
+          animate={{ x: position.x - 220, y: position.y - 220 }}
+          transition={{ type: "spring", stiffness: 55, damping: 20, mass: 0.7 }}
+          aria-hidden="true"
+        />
+      )}
       <div className="global-grid" aria-hidden="true" />
       <div className="noise-layer" aria-hidden="true" />
       <div className="ambient-blob ambient-blob-one" aria-hidden="true" />

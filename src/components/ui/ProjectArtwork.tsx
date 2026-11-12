@@ -1,6 +1,7 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { BrainCircuit, Clapperboard, Database, HeartHandshake } from "lucide-react";
 import type { Project } from "../../types";
+import { useAccessibility } from "../../contexts/AccessibilityContext";
 
 const icons = {
   "AniData": Clapperboard,
@@ -10,8 +11,21 @@ const icons = {
 };
 
 export function ProjectArtwork({ project, index }: { project: Project; index: number }) {
-  const reduced = useReducedMotion();
+  const { shouldReduceMotion: reduced } = useAccessibility();
   const Icon = icons[project.title as keyof typeof icons] ?? Clapperboard;
+
+  if (project.image) {
+    return (
+      <div className="project-artwork project-artwork-cover">
+        <img
+          src={project.image}
+          alt={`Capa do projeto ${project.title}.`}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={`project-artwork project-artwork-${(index % 4) + 1}`}>

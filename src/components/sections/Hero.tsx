@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { ArrowDown, Mail } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { SocialLinks } from "../ui/SocialLinks";
 import { MagneticButton } from "../animation/MagneticButton";
 import { animationConfig } from "../../utils/animationConfig";
+import { useAccessibility } from "../../contexts/AccessibilityContext";
 
 const words = ["Front-end", "Back-end", "Interfaces", "APIs", "Sistemas"];
+const HeroScene = lazy(() => import("../ui/HeroScene"));
 
 export function Hero() {
-  const reduced = useReducedMotion();
+  const { shouldReduceMotion: reduced } = useAccessibility();
   const [word, setWord] = useState(0);
 
   useEffect(() => {
@@ -19,11 +21,11 @@ export function Hero() {
 
   const sequence = {
     hidden: {},
-    visible: { transition: { staggerChildren: animationConfig.stagger.normal, delayChildren: .12 } }
+    visible: { transition: { staggerChildren: reduced ? 0 : animationConfig.stagger.normal, delayChildren: reduced ? 0 : .12 } }
   };
   const item = {
-    hidden: { opacity: 0, y: 28, filter: "blur(10px)" },
-    visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: .8, ease: animationConfig.ease.smooth } }
+    hidden: reduced ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 28, filter: "blur(10px)" },
+    visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: reduced ? 0 : .8, ease: animationConfig.ease.smooth } }
   };
 
   return (
@@ -33,14 +35,14 @@ export function Hero() {
       <div className="hero-technical-label hero-label-right">FRANCA — SP / BR</div>
 
       <div className="container hero-layout">
-        <motion.div className="hero-copy" variants={sequence} initial="hidden" animate="visible">
+        <motion.div className="hero-copy" variants={sequence} initial={reduced ? false : "hidden"} animate="visible">
           <motion.p variants={item} className="hero-eyebrow">Olá, eu sou</motion.p>
 
           <div className="hero-name-mask">
             <motion.h1
-              initial={{ y: "110%", skewY: 4 }}
+              initial={reduced ? false : { y: "110%", skewY: 4 }}
               animate={{ y: 0, skewY: 0 }}
-              transition={{ duration: 1.05, delay: .18, ease: animationConfig.ease.smooth }}
+              transition={{ duration: reduced ? 0 : 1.05, delay: reduced ? 0 : .18, ease: animationConfig.ease.smooth }}
             >
               Eduarda Borges
             </motion.h1>
@@ -52,10 +54,10 @@ export function Hero() {
               <AnimatePresence mode="wait">
                 <motion.b
                   key={words[word]}
-                  initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
+                  initial={reduced ? false : { opacity: 0, y: 14, filter: "blur(6px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -14, filter: "blur(6px)" }}
-                  transition={{ duration: .35 }}
+                  exit={reduced ? undefined : { opacity: 0, y: -14, filter: "blur(6px)" }}
+                  transition={{ duration: reduced ? 0 : .35 }}
                 >
                   {words[word]}
                 </motion.b>
@@ -80,11 +82,12 @@ export function Hero() {
 
         <motion.div
           className="hero-stage"
-          initial={{ opacity: 0, scale: .9, filter: "blur(16px)" }}
+          initial={reduced ? false : { opacity: 0, scale: .9, filter: "blur(16px)" }}
           animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-          transition={{ duration: 1.2, delay: .28, ease: animationConfig.ease.smooth }}
+          transition={{ duration: reduced ? 0 : 1.2, delay: reduced ? 0 : .28, ease: animationConfig.ease.smooth }}
         >
           <div className="hero-visual" aria-hidden="true">
+            <Suspense fallback={null}><HeroScene /></Suspense>
             <div className="hero-visual-orbit hero-visual-orbit-one" />
             <div className="hero-visual-orbit hero-visual-orbit-two" />
             <div className="hero-visual-card">

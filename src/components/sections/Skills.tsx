@@ -3,6 +3,8 @@ import { Braces, Database, Gauge, Layers3, Smartphone, Workflow } from "lucide-r
 import { useMemo, useState } from "react";
 import { skillGroups } from "../../data/skills";
 import { SectionTitle } from "../ui/SectionTitle";
+import { TechnologyIcon } from "../ui/TechnologyIcon";
+import { useAccessibility } from "../../contexts/AccessibilityContext";
 
 const icons = {
   "Front-end": Layers3,
@@ -14,6 +16,7 @@ const icons = {
 };
 
 export function Skills() {
+  const { shouldReduceMotion: reduced } = useAccessibility();
   const [active, setActive] = useState<(typeof skillGroups)[number]["title"]>("Front-end");
   const current = useMemo(() => skillGroups.find((group) => group.title === active) ?? skillGroups[0], [active]);
   const Icon = icons[current.title];
@@ -67,10 +70,10 @@ export function Skills() {
               <motion.div
                 key={current.title}
                 className="v3-system-content"
-                initial={{ opacity: 0, x: 36, filter: "blur(10px)" }}
+                initial={reduced ? false : { opacity: 0, x: 36, filter: "blur(10px)" }}
                 animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, x: -28, filter: "blur(8px)" }}
-                transition={{ duration: .48, ease: [0.16, 1, 0.3, 1] }}
+                exit={reduced ? undefined : { opacity: 0, x: -28, filter: "blur(8px)" }}
+                transition={{ duration: reduced ? 0 : .48, ease: [0.16, 1, 0.3, 1] }}
               >
                 <div className="v3-system-header">
                   <div className="v3-system-icon"><Icon size={28} /></div>
@@ -92,11 +95,11 @@ export function Skills() {
                     {current.items.map((item, index) => (
                       <motion.span
                         key={item}
-                        initial={{ opacity: 0, scale: .82, y: 16 }}
+                        initial={reduced ? false : { opacity: 0, scale: .82, y: 16 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        transition={{ delay: .08 + index * .055, duration: .38 }}
+                        transition={{ delay: reduced ? 0 : .08 + index * .055, duration: reduced ? 0 : .38 }}
                       >
-                        <i>{String(index + 1).padStart(2, "0")}</i>
+                        <TechnologyIcon technology={item} />
                         {item}
                       </motion.span>
                     ))}

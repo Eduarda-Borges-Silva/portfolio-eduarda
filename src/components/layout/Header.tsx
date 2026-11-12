@@ -3,14 +3,17 @@ import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useActiveSection } from "../../hooks/useActiveSection";
 import { ThemeToggle } from "../ui/ThemeToggle";
+import { useAccessibility } from "../../contexts/AccessibilityContext";
 
 const nav = [["inicio","Início"],["sobre","Sobre"],["tecnologias","Tecnologias"],["projetos","Projetos"],["experiencia","Experiência"],["formacao","Formação"],["contato","Contato"]] as const;
 
-export function Header({ theme, onToggle }: { theme: "dark" | "light"; onToggle: () => void }) {
+export function Header({ theme, onToggle, isProjectsPage }: { theme: "dark" | "light"; onToggle: () => void; isProjectsPage: boolean }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { shouldReduceMotion: reduced } = useAccessibility();
   const ids = useMemo(() => nav.map((item) => item[0]), []);
-  const active = useActiveSection(ids);
+  const activeSection = useActiveSection(ids);
+  const active = isProjectsPage ? "projetos" : activeSection;
 
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 30);
@@ -31,18 +34,23 @@ export function Header({ theme, onToggle }: { theme: "dark" | "light"; onToggle:
 
   return (
     <motion.header
-      initial={{ y: -90 }}
+      initial={reduced ? false : { y: -90 }}
       animate={{ y: 0 }}
-      transition={{ duration: .8, delay: .25 }}
+      transition={{ duration: reduced ? 0 : .8, delay: reduced ? 0 : .25 }}
       className={`v2-header ${scrolled ? "is-scrolled" : ""}`}
     >
       <div className="container v2-header-inner">
-        <a href="#inicio" className="brand-mark" aria-label="Ir para o início"><span>EB</span><i /></a>
+        <a href={isProjectsPage ? "/#inicio" : "#inicio"} className="brand-mark" aria-label="Ir para o início"><span>EB</span><i /></a>
 
         <nav className="hidden gap-1 lg:flex" aria-label="Navegação principal">
           {nav.map(([id, label]) => (
-            <a key={id} href={`#${id}`} className={`premium-nav-link ${active === id ? "is-active" : ""}`}>
-              {active === id && <motion.span layoutId="active-nav" className="nav-active-pill" />}
+            <a
+              key={id}
+              href={id === "projetos" ? "/projetos" : isProjectsPage ? `/#${id}` : `#${id}`}
+              className={`premium-nav-link ${active === id ? "is-active" : ""}`}
+              aria-current={isProjectsPage && id === "projetos" ? "page" : undefined}
+            >
+              {active === id && (reduced ? <span className="nav-active-pill" /> : <motion.span layoutId="active-nav" className="nav-active-pill" />)}
               <span>{label}</span>
             </a>
           ))}
@@ -58,12 +66,12 @@ export function Header({ theme, onToggle }: { theme: "dark" | "light"; onToggle:
 
       <AnimatePresence>
         {open && (
-          <motion.div className="v2-mobile-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div className="v2-mobile-overlay" initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} exit={reduced ? undefined : { opacity: 0 }}>
             <motion.nav
-              initial={{ x: "100%" }}
+              initial={reduced ? false : { x: "100%" }}
               animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ duration: .55, ease: [0.16, 1, 0.3, 1] }}
+              exit={reduced ? undefined : { x: "100%" }}
+              transition={{ duration: reduced ? 0 : .55, ease: [0.16, 1, 0.3, 1] }}
               aria-label="Menu móvel"
               id="mobile-navigation"
             >
@@ -71,11 +79,11 @@ export function Header({ theme, onToggle }: { theme: "dark" | "light"; onToggle:
               {nav.map(([id, label], index) => (
                 <motion.a
                   key={id}
-                  href={`#${id}`}
+                  href={id === "projetos" ? "/projetos" : isProjectsPage ? `/#${id}` : `#${id}`}
                   onClick={() => setOpen(false)}
-                  initial={{ opacity: 0, x: 30 }}
+                  initial={reduced ? false : { opacity: 0, x: 30 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: .15 + index * .055 }}
+                  transition={{ delay: reduced ? 0 : .15 + index * .055, duration: reduced ? 0 : undefined }}
                 >
                   <span>0{index + 1}</span>{label}
                 </motion.a>

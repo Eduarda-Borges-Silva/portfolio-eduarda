@@ -1,7 +1,9 @@
 import { type MouseEvent, type ReactNode, useRef } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useAccessibility } from "../../contexts/AccessibilityContext";
 
 export function Magnetic({ children, className = "" }: { children: ReactNode; className?: string }) {
+  const { shouldReduceMotion } = useAccessibility();
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -19,9 +21,9 @@ export function Magnetic({ children, className = "" }: { children: ReactNode; cl
     <motion.div
       ref={ref}
       className={className}
-      style={{ x: springX, y: springY }}
-      onMouseMove={move}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
+      style={shouldReduceMotion ? undefined : { x: springX, y: springY }}
+      onMouseMove={shouldReduceMotion ? undefined : move}
+      onMouseLeave={shouldReduceMotion ? undefined : () => { x.set(0); y.set(0); }}
     >
       {children}
     </motion.div>
