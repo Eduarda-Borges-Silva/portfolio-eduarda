@@ -50,22 +50,17 @@ O honeypot `_gotcha` ajuda a filtrar envios automatizados. Até a variável de a
 
 ## GitHub
 
-1. Crie ou escolha um repositório no GitHub e clone-o.
-2. Copie o conteúdo desta pasta para a raiz do repositório.
-3. Revise os dados pessoais e os links, depois execute `npm install`, `npm run build` e `npm run lint`.
-4. Faça commit e envie para a branch principal.
-
-Nenhum endereço remoto de Git foi incluído: o repositório de destino ainda precisa ser escolhido.
+O código está publicado em [Eduarda-Borges-Silva/portfolio-eduarda](https://github.com/Eduarda-Borges-Silva/portfolio-eduarda), na branch `main`. O arquivo `.env.local` é ignorado pelo Git; use `.env.example` como base para a configuração local.
 
 ## Vercel
 
-Importe o repositório escolhido na Vercel. A configuração esperada é:
+Importe o repositório `Eduarda-Borges-Silva/portfolio-eduarda` na Vercel. A configuração esperada é:
 
 - Framework preset: Vite
 - Build command: `npm run build`
 - Output directory: `dist`
 - Install command: `npm install`
 
-`vercel.json` inclui o fallback da SPA e cabeçalhos básicos de segurança e cache. O domínio e as URLs de SEO devem ser preenchidos depois que o projeto e o domínio forem definidos. Nada foi publicado.
+Na Vercel, configure a variável `VITE_FORMSPREE_ENDPOINT` com o endpoint do formulário antes do deploy de produção. `vercel.json` inclui o fallback da SPA e cabeçalhos básicos de segurança e cache. Configure um domínio próprio quando desejar; a URL padrão da Vercel funciona sem isso.
 
 
